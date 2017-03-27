@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Movie Picker</title>
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <link rel="stylesheet" href="custom.css">
+		
+</head>
+
+
+<body>
+
+
+			<div data-role="page" data-theme="b" id="splash" style="background-color: #fff;" id="page">
+	        <div class="splash"></div>
+	    </div>
+
+			<div id="ajax" data-role="page">
+        	<div id="branding">
+						<h1>Movie Picker</h1>
+					</div>
+
+					<div data-role="content">
+							<input type="search" name="keyword" id="search" value="" placeholder="Search Movie">
+							<input type="button" onclick="searchMovie($('#search').val())" data-theme="b" data-icon="search" data-iconshadow="true" value="Search">
+
+							<ul data-role="listview" data-inset="true" id="result">
+							</ul>
+					</div>
+			</div>
+
+      <script type="text/javascript">
+  				var globalID;
+  				$(function() {
+              console.log('setTimeout');
+              setTimeout(hideSplash, 2000);
+          });
+
+          function hideSplash() {
+              $.mobile.changePage("#ajax", "fade");
+          }
+  				function searchMovie(keyword){
+  						console.log(keyword);
+  						$.getJSON('http://www.omdbapi.com/?s=' + keyword, function(data){
+  								 $('#result').empty();
+  								 $.each(data["Search"], function(index, element) {
+  				            var url = "#movie_detail";
+  										var img = element.Poster;
+  				            var listitem = '<li data-icon="info" id = "' + element.imdbID +'"><a href="' + url + '" data-transition="slide"><img src="'+ img +'" height="80" width="80"><h1>' + element.Title + '</h1><p>Year ' + element.Year + '</p></a></li>';
+  										$('#result').append(listitem);
+  				            $('#result').listview('refresh');
+  								});
+  							}
+  						);
+  				}
+  		</script>
+  		</div>
+
+      <div data-role="page" id="movie_detail" >
+  		    <div data-role="header">
+            <a href="#ajax" class="ui-btn ui-btn-b ui-corner-all ui-shadow ui-icon-home ui-btn-icon-left" >Home</a>
+                  </div>
+
+
+
+
+  						 <div data-role="content">
+
+  								 <div id="poster" ></div>
+  								 <div id="title"></div>
+
+  								 <label  cols="40" rows="8"   name="plot" style="color:green"  disabled="disabled" id="plot" value="" ></label>
+
+  								 <label for="actor" >Actor </label>
+  								 <input cols="40" rows="8" name="actor" style="color:black" disabled="disabled" id="actor" value=""></input>
+
+  								 <label for="rated" >Rated</label>
+  								 <input type="text" name="rated" style="color:black"  disabled="disabled" id="rated" value=""></input>
+
+  								 <label for="award" >Awards</label>
+  								<input cols="40" rows="8" name="award" style="color:black" disabled="disabled" id="award" value=""></input>
+
+                	 <label for="itemid" >Runtime</label>
+  								 <input type="text" name="runtime"  style="color:black"  disabled="disabled" id="runtime" value=""></input>
+
+  								  <label for="itemid" >Director</label>
+  								 <input type="text" name="director" style="color:black" disabled="disabled" id="director" value=""></input>
+
+
+  						 <div data-role="footer" data-position="fixed">
+  							 <center><p><a href="#ajax" style="color:blue" >Back to Search Movie</a></p></center>
+  						 </div>
+  					</div>
+
+  							</body>
+  							</html>
+
+
+  							<div data-role="page" data-theme="b" id="splash" >
+  								 <div class="splash"></div>
+  						 </div>
+  				<script type="text/javascript">
+  						$('#result').on('click', 'li', function() {
+  							 console.log("clicked "+ this.id);
+  							 globalID = this.id;
+  							 console.log("Gobal "+ globalID);
+  					  });
+              $(document).on("pageshow", "#movie_detail", function() {
+                  getDetail(globalID);
+              });
+              function getDetail(id) {
+  							console.log("detail "+id);
+  							console.log(window.location.search);
+  							$.getJSON('http://www.omdbapi.com/?i=' + id, function(data) {
+  										$('#poster').empty();
+  										$('#title').empty();
+  										$('#runtime').val(data.Runtime).show();
+  										$('#director').val(data.Director).show();
+
+  										$('#actor').val(data.Actors).show();
+  										$('#rated').val(data.Rated).show();
+  										$('#imdbRating').val(data.imdbRating).show();
+  										$('#award').val(data.Awards).show();
+  										var pos = '<center><img src= "' + data.Poster + '" height="330" width="300"></center>';
+  										$('#poster').append(pos);
+  										var title = '<center><h4>' + data.Title + '</h4></center>';
+  										$('#title').append(title);
+                  });
+              }
+          </script>
+	</div>
+
+</body>
+</html>
